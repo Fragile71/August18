@@ -12,5 +12,11 @@ import com.poseidon.web.dto.BoardDTO;
 public interface BoardDAO {
 
 	 List<BoardDTO> boardList();
+	 
+	 BoardDTO detail(int bno);
+
+	int write(BoardDTO dto);
+
+	void readUP(int bno);
 
 }
