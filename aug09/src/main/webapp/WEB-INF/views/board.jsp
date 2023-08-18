@@ -80,7 +80,7 @@
 					name += '<input type="hidden" class="uuid" value="'+data.uuid+'">';
 					$(".detail-name").html(name);
 					$(".detail-date").text(date);
-					$(".detail-read").text(read);
+					$(".detail-read").text(data.ip+" / "+read);
 					$(".detail-content").html(data.content);
 					$("#exampleModal").modal("show");
 				},

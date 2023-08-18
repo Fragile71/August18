@@ -73,6 +73,13 @@ public class Util {
 		return ip;
 	}
 	
+	
+public int str2Int(Object obj) {
+
+return Integer.parseInt(String.valueOf(obj));
+}
+	
+	
 	//숫자인지 확인하기
 	public boolean isNum(Object obj) {
 		try {

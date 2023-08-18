@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,7 @@ public class BoardController {
 		
 		json.put("content", dto.getBcontent());
 		json.put("uuid", dto.getUuid());
+		json.put("ip", dto.getBip());
 		
 		
 		//System.out.println(json.toString());
@@ -52,27 +54,30 @@ public class BoardController {
 		return json.toString();
 	}
 
+	
 	@GetMapping("/write")
 	public String write() {
 		return "write";
 	}
-
+	
+	
 	@PostMapping("/write")
-	public String write(HttpServletRequest request) {
-
-		//System.out.println(request.getParameter("title"));
-		//System.out.println(request.getParameter("content"));
+	public String write(HttpServletRequest request, HttpSession session) {
+	
+		
 		BoardDTO dto = new BoardDTO();
-        dto.setBtitle(request.getParameter("title"));
-        dto.setBcontent(request.getParameter("content"));
-        dto.setM_id("mingming");//임시로 member에 있는 id를 넣어주세요
-        dto.setBip("0.0.0.0");
-        
-        int result = boardService.write(dto);
-        System.out.println(result);
+		dto.setBtitle(request.getParameter("title"));
+		dto.setBcontent(request.getParameter("content"));
+		dto.setM_id(String.valueOf(session.getAttribute("mid")));
+		
+		
+		int result = boardService.write(dto);
+		System.out.println(result);
 		
 		return "redirect:/board";
 	}
+
+	
 
     @PostMapping("/delete")
     public String delete(@RequestParam Map<String,Object> map) {

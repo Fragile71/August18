@@ -8,7 +8,7 @@
 	</select>
 	
 	<select id="detail" parameterType="Integer" resultType="com.poseidon.web.dto.BoardDTO">
-		SELECT bcontent, uuid FROM boardview WHERE bno=#{bno }
+		SELECT bcontent, uuid, bip FROM boardview WHERE bno=#{bno }
 	</select>
 
  
