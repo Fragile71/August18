@@ -35,8 +35,12 @@ dependencies {
    implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
    implementation 'org.springframework.boot:spring-boot-starter-tomcat'
    implementation 'org.json:json:20230227'
-}
 
+// log
+   implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
+
+
+}
 
 tasks.named('test') {
 	useJUnitPlatform()
