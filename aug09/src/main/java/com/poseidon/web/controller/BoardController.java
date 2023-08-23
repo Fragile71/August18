@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.poseidon.web.dto.BoardDTO;
 import com.poseidon.web.service.BoardService;
 
@@ -40,9 +42,9 @@ public class BoardController {
 		System.out.println(bno);
 		BoardDTO dto = boardService.detail(bno);
 		//읽음수 +1 하기
+        ObjectNode json =JsonNodeFactory.instance.objectNode();
 		
-		
-		JSONObject json = new JSONObject();
+		//JSONObject json = new JSONObject();
 		
 		json.put("content", dto.getBcontent());
 		json.put("uuid", dto.getUuid());

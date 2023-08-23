@@ -1,23 +1,33 @@
 package com.poseidon.web.controller;
 
 import java.io.File;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.mail.EmailException;
+import org.apache.commons.mail.SimpleEmail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.poseidon.web.service.AdminService;
 import com.poseidon.web.util.Util;
 
@@ -89,29 +99,113 @@ public class AdminController {
 
 	@PostMapping("/noticeWrite")
 	public String noticeWrite(@RequestParam("upFile") MultipartFile upfile, @RequestParam Map<String, Object> map) {
-		
-		//upfile정보보기
-	if(!upfile.isEmpty()){
-	
-	HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
-	String path = request.getServletContext().getRealPath("/upload");
-	System.out.println("실제경로 :"+ path);
-	
-	System.out.println(upfile.getOriginalFilename());
-	System.out.println(upfile.getSize());
-	System.out.println(upfile.getContentType());
-	
-    File newFileName = new File(upfile.getOriginalFilename());
-	
-	}	
-	
-	
-	map.put("mno",4);
-	adminService.noticeWrite(map);
-	
+		// 2023-08-22 요구사항확인
+		if (!upfile.isEmpty()) {
+			// 저장할 경로명 뽑기 request뽑기
+			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
+					.getRequest();
+			String path = request.getServletContext().getRealPath("/upload");
+			System.out.println("실제 경로 : " + path);
+
+			// upfile정보보기
+			System.out.println(upfile.getOriginalFilename());
+			System.out.println(upfile.getSize());
+			System.out.println(upfile.getContentType());
+			// 진짜로 파일 업로드 하기 경로 + 저장할 파일명
+			// C:\eGovFrameDev-4.1.0-64bit\workspace\aug09\src\main\webapp\
+			// upload\20171109_5a03383e9c5c4.gif
+			// String타입의 경로를 file형태로 바꿔주겠습니다.
+			// File filePath = new File(path);
+			UUID uuid = UUID.randomUUID();
+			// String realFileName = uuid.toString() + upfile.getOriginalFilename();
+
+			// 날짜 뽑기 SimpleDataFormat
+			// Date date = new Date();
+			// SimpleDateFormat sdf = new SimpleDateFormat("YYYYMMddHHmmss");
+			// String dateTime =sdf.format(date);
+
+			LocalDateTime ldt = LocalDateTime.now();
+			String format = ldt.format(DateTimeFormatter.ofPattern("YYYYMMddHHmmss"));
+			// 날짜 + UUID + 실제 파일명으로 사용
+			String realFileName = format + uuid.toString() + upfile.getOriginalFilename();
+
+			File newFileName = new File(path, realFileName);
+
+			// 이제 파일 올립니다.
+			try {
+				// upfile.transferTo(newFileName);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			// System.out.println("저장 끝.");
+			// FileCopyUtils 를 사용하기 위해서는 오리지널 파일을 byte[]로 만들어야 합니다.
+			try {
+				FileCopyUtils.copy(upfile.getBytes(), newFileName);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			map.put("upFile", upfile.getOriginalFilename());
+			map.put("realFile", realFileName);
+
+		}
+
+		map.put("mno", 4);
+		System.out.println(map);
+		adminService.noticeWrite(map);
 		return "redirect:/admin/notice";
 	}
-	
-	
-}
 
+	@GetMapping("/mail")
+	public String mail() {
+
+		return "admin/mail";
+	}
+
+	@PostMapping("/mail")
+	public String mail(@RequestParam Map<String, Object> map) throws EmailException {
+
+		util.htmlMailSender(map);
+
+		return "admin/mail";
+
+	}
+
+	// noticeDetail
+	@ResponseBody
+	@PostMapping("/noticeDetail")
+	public String noticeDetail(@RequestParam("nno") int nno) {
+		System.out.println(nno);
+
+		// jackson사용해보기
+		ObjectNode json = JsonNodeFactory.instance.objectNode();
+
+		// json.put("name", "홍길듕" );
+
+		Map<String, Object> map = adminService.noticeDetail(nno);
+		System.out.println(map);
+
+		json.put("map", String.valueOf(map.get("ncontent")));
+		// 해야할일
+		// 1.데이터 베이스에 물어보기(nno로) -> 본문내용가져오기
+		// 2.jackson에 담아주세요.
+
+		return json.toString();
+
+	}
+
+	// noticeHide
+	@ResponseBody
+	@PostMapping("/noticeHide")
+	public String noticeHide(@RequestParam("nno") int nno) {
+
+		int result = adminService.noticeHide(nno);
+		System.out.println(result);
+
+		ObjectNode json = JsonNodeFactory.instance.objectNode();	
+		json.put("result", result);
+		
+		return json.toString();
+	}
+
+}

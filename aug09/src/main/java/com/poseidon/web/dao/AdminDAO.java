@@ -13,4 +13,8 @@ public interface AdminDAO {
 	List<Map<String, Object>> notice();
 
 	void noticeWrite(Map<String, Object> map);
+
+	Map<String, Object> noticeDetail(int nno);
+
+	int noticeHide(int nno);
 }

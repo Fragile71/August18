@@ -4,12 +4,11 @@
 
 
 	<select id="adminLogin" parameterType="map" resultType="map">
-
-
+<![CDATA[
 		SELECT m_name,count(*) AS count,m_grade
 		FROM member
-		WHERE m_id=#{id} AND AES_DECRYPT(UNHEX(m_pw),'sik') = #{pw}
-
+		WHERE m_id=#{id} AND AES_DECRYPT(UNHEX(m_pw),'sik') = #{pw} AND m_grade >= 5
+]]>
 
 
 	</select>
@@ -18,7 +17,8 @@
 	<select id="notice" resultType="Map">
 
 		SELECT *
-		FROM notice ORDER BY nno DESC
+		FROM notice ORDER BY nno
+		DESC
 
 
 	</select>
@@ -26,11 +26,23 @@
 
 	<insert id="noticeWrite" parameterType="Map">
 		INSERT INTO notice(ntitle, ncontent, m_no
-		         <if test="upFile != null and upFile != ''">,norifile</if>)
+		<if test="upFile != null and upFile != ''">,norifile, nrealfile</if>)
 		VALUES (#{title}, #{content}, #{mno}
-		         <if test="upFile != null and upFile != ''">,#{upFile}</if>)
+		<if test="upFile != null and upFile != ''">,#{upFile}, #{realFile}</if>)
 	</insert>
 
+<select id="noticeDetail" parameterType="Integer" resultType="map">
+SELECT *
+FROM notice
+where nno=#{nno}
+
+
+</select>
+
+<update id="noticeHide" parameterType="Integer">
+UPDATE notice SET ndel= if(ndel = 1, 0 ,1)
+WHERE nno=#{nno}
+</update>
 
 
 </mapper>
