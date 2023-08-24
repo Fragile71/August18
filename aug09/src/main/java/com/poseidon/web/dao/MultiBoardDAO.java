@@ -14,5 +14,7 @@ public interface MultiBoardDAO {
 
 	Map<String, Object> mbdetail(int mbno);
 
+	List<Map<String, Object>> boardList();
+
 	
 }

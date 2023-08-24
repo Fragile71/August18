@@ -13,7 +13,7 @@ body {
 	padding:0;
 	width: 50px;
 	height: 100vh;
-	background-color: black;
+	background-color: blue;
 	float: left;
 	overflow: hidden;
 }
@@ -21,7 +21,18 @@ body {
 	width: 200px;
 	transition: 0.5s;
 }
-
+.menu-logo{
+	padding: 30px;
+	width: 190px;
+	height: auto;
+	box-sizing: border-box;
+}
+.menu-logo img{
+	width:100px;
+	height:100px;
+	margin: auto;
+    display: block;
+}
 .menu-item{
 	width: 190px;
 	margin: 5px;
@@ -77,7 +88,7 @@ h1{
 	transition: 0.5s;
 	border: 0px;
 	background-color: yellow;
-	margin: 150px;
+	margin: 50px;
 	float:left;
 }
 .box:hover {
@@ -87,9 +98,9 @@ h1{
 	height: 200px;
 	width: 200px;
 	line-height: 100px;
-	transition:0.4s;
+	transition: 0.5s;
 	border-radius: 20px;
-	margin: 100px;
+	margin: 50px;
 }
 #comment{
 	width: 100%; 
@@ -97,8 +108,9 @@ h1{
 	padding: 5px;
 	line-height: 30px;
 	overflow: visible;
-	animation: fadeInUp 1s;
+	animation: fadeInUp 0.5s;
 }
+
 
 
 

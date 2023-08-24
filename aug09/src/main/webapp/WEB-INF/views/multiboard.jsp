@@ -23,6 +23,12 @@
 	<!-- Masthead-->
 	<header class="masthead">
 		<div class="container">
+<c:forEach items="${boardList }" var="l">
+<a href="${l.b_url }">${l.b_catename }</a>
+
+</c:forEach>
+
+
 			<h1>multiboard</h1>
 	
 			<c:choose>
@@ -43,12 +49,9 @@
 						<tbody>
 							<c:forEach items="${list }" var="row">
 
-								<tr class="row detail" onclick="location.href='./mbdetail?mbno=${row.mb_no}'" >
-									<td class="col-1">${row.mb_no}</td>
-									<td class="col-6 title">${row.mb_title}<c:if
-											test="${row.commentcount ne 0 }">&nbsp;<span
-												class="badge bg-secondary">${row.commentcount}</span>
-										</c:if></td>
+								<tr class="row detail" onclick="location.href='./mbdetail?board=${param.board}&mbno=${row.mb_no}'" >
+									<td class="col-1">${row.rowNum}</td>
+									<td class="col-6 title">${row.mb_title}</td>
 									<td class="col-2">${row.m_name}</td>
 									<td class="col-2">${row.mb_date}</td>
 									<td class="col-1">${row.mb_read}</td>

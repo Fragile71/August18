@@ -20,6 +20,7 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -208,4 +209,26 @@ public class AdminController {
 		return json.toString();
 	}
 
+	
+	//2023-08-24 어플리케이션 테스트 수행
+	@RequestMapping(value ="/multiBoard", method= RequestMethod.GET)
+	public String multiBoard(Model model) {
+		
+		
+		List<Map<String, Object>> list = adminService.setupBoardList(); 
+		
+			model.addAttribute("list", list);
+		
+		return "admin/multiBoard";
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
