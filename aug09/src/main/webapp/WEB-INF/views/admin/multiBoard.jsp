@@ -47,6 +47,23 @@
 
 						</c:forEach>
 					</div>
+<div class="">
+<form action="./multiBoard" method="post">
+<input type="number" name="cateNum" required="required" placeholder="게시판 번호 입력">
+<input type="text" name="name" required="required" placeholder="게시판 이름 입력">
+
+<input type="text" name="comment" required="required" placeholder="참고를 남겨주세요">
+<button type="submit">저장</button>
+
+
+
+</form>
+
+
+</div>
+
+
+
 
 				</c:when>
 				<c:otherwise>

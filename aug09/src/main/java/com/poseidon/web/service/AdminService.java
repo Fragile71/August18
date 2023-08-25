@@ -43,4 +43,19 @@ public class AdminService {
 		
 		return adminDAO.setupBoardList();
 	}
+
+	public int multiBoardInsert(Map<String, String> map) {
+	
+		return adminDAO.multiBoardInsert(map);
+	}
+
+	public List<Map<String, Object>> memberList() {
+		
+	return adminDAO.memberList();
+	}
+
+	public int gradeChange(Map<String, Object> map) {
+		
+		return adminDAO.gradeChange(map);
+	}
 }

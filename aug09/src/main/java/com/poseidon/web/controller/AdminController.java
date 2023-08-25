@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -223,12 +224,43 @@ public class AdminController {
 	}
 	
 	
+	@PostMapping("/multiBoard")
+	public String multiBoard(@RequestParam Map<String, String> map){
+		System.out.println(map);
+	
+		int result = adminService.multiBoardInsert(map);
+		
+		System.out.println("result:" + result);
+		return "redirect:/admin/multiBoard";
+		}
 	
 	
+	@RequestMapping(value="/member", method = RequestMethod.GET)
+	public ModelAndView member(Model model){
+		
+		ModelAndView mv = new ModelAndView("admin/member");
+		
+		List<Map<String, Object>> memberList = adminService.memberList();
+		
+		model.addAttribute("memberList", memberList);
+		
+		
+		return mv;
+	}
 	
-	
-	
-	
+	@GetMapping("/gradeChange")
+	public String gradeChange(@RequestParam Map<String, Object> map, Model model) {
+		
+		
+		int change = adminService.gradeChange(map);
+		
+		System.out.println(change);
+		model.addAttribute("change",change);
+		
+		
+		
+		return"redirect:/admin/member";
+	}
 	
 	
 }
