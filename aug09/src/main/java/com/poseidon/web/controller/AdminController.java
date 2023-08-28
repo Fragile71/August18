@@ -30,6 +30,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.poseidon.web.dto.BoardDTO;
+import com.poseidon.web.dto.MultiboardDTO;
 import com.poseidon.web.service.AdminService;
 import com.poseidon.web.util.Util;
 
@@ -64,7 +66,7 @@ public class AdminController {
 		Map<String, Object> result = adminService.adminLogin(map);
 		System.out.println(result);
 		System.out.println(String.valueOf(result.get("count")).equals("1"));
-		System.out.println(Integer.parseInt(String.valueOf(result.get("m_grade"))) > 5);
+		//System.out.println(Integer.parseInt(String.valueOf(result.get("m_grade"))) > 5);
 
 		if (util.str2Int(result.get("count")) == 1 && util.str2Int(result.get("m_grade")) >= 5) {
 			System.out.println("좋았어! 진행시켜");
@@ -261,6 +263,44 @@ public class AdminController {
 		
 		return"redirect:/admin/member";
 	}
+	
+	@GetMapping("/post")
+	   public String post(Model model, @RequestParam(name = "cate", required = false, defaultValue = "0") int cate,
+	                  @RequestParam Map<String, Object> map) {      
+	      if(!map.containsKey("cate") || map.get("cate").equals(null) || map.get("cate").equals("")) {
+	         map.put("cate", 0);
+	      }      
+	      System.out.println(map);
+	      List<Map<String, Object>> list = adminService.post(map); //게시글 전체 불러오기
+	      List<Map<String, Object>> boardList = adminService.boardList(); //게시판 관리번호 불러오기
+	      model.addAttribute("boardlist", boardList);
+	      model.addAttribute("list", list);
+	      return "/admin/post";
+	   }
+	
+		/*
+		 * @ResponseBody
+		 * 
+		 * @PostMapping("/detail3") public String detail(@RequestParam("mb_no") int
+		 * mb_no){
+		 * 
+		 * Map<String, Object> map = adminService.post(mb_no); ObjectNode json =
+		 * JsonNodeFactory.instance.objectNode();
+		 * 
+		 * 
+		 * json.put("mb_no", String.valueOf(map.get("mb_no")));
+		 * System.out.println(map.get("mb_no"));
+		 * 
+		 * 
+		 * //System.out.println(json.toString());
+		 * 
+		 * return json.toString();
+		 * 
+		 * 
+		 * 
+		 * }
+		 */
+	
 	
 	
 }

@@ -26,5 +26,14 @@ public interface AdminDAO {
 
 	int gradeChange(Map<String, Object> map);
 
+	List<Map<String, Object>> post(Map<String, Object> map);
+
+	List<Map<String, Object>> boardList();
+
+	List<Map<String, Object>> post();
+
+	
+	 // Map<String, Object> post(int mb_no);
+	 
 	
 }
