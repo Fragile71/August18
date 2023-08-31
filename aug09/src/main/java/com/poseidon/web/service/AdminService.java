@@ -68,6 +68,10 @@ public class AdminService {
 	
 		return adminDAO.boardList();
 	}
+	
+	public String content(int mbno) {
+		return adminDAO.content(mbno);
+	}
 
 //	public Map<String, Object> post(int mb_no) {
 //		

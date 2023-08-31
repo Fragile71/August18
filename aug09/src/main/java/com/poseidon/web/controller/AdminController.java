@@ -1,18 +1,27 @@
 package com.poseidon.web.controller;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.mail.EmailException;
-import org.apache.commons.mail.SimpleEmail;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,11 +36,15 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.poseidon.web.dto.BoardDTO;
-import com.poseidon.web.dto.MultiboardDTO;
 import com.poseidon.web.service.AdminService;
 import com.poseidon.web.util.Util;
 
@@ -300,7 +313,132 @@ public class AdminController {
 		 * 
 		 * }
 		 */
+	@ResponseBody
+	@GetMapping("/detail")
+	public String detail(@RequestParam("mbno") int mbno) {
+		// mbno:mbno
+		String content = adminService.content(mbno);
+		System.out.println(content);
+		JSONObject json = new JSONObject();
+		json.put("content", content);
+
+		return json.toString();
+	}
+
+	@GetMapping("/corona")
+	public String corona(Model model) throws IOException {
+		StringBuilder urlBuilder = new StringBuilder(
+				"http://apis.data.go.kr/1790387/covid19CurrentStatusKorea/covid19CurrentStatusKoreaJason"); /* URL */
+		urlBuilder.append("?" + URLEncoder.encode("serviceKey", "UTF-8")
+				+ "=X2%2BL9ngA9U%2BUDcmJaEl8ESe3WiuXfcG5rlbqRFefc4sZqoZiZtC1z3gPPtX782lvE1bLYQHxIt%2Fy981RH%2FkJqA%3D%3D"); /*
+																															 * Service
+																															 * Key
+																															 */
+		// urlBuilder.append("&numOfRows=100");
+		// urlBuilder.append("&startCreateDt=20230801");
+		// urlBuilder.append("&endCreateDt=20230829");
+		URL url = new URL(urlBuilder.toString());
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		conn.setRequestMethod("GET");
+		conn.setRequestProperty("Content-type", "application/json");
+		System.out.println("Response code: " + conn.getResponseCode());
+		BufferedReader rd;
+		if (conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
+			rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+		} else {
+			rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+		}
+		StringBuilder sb = new StringBuilder();
+		String line;
+		while ((line = rd.readLine()) != null) {
+			sb.append(line);
+		}
+		rd.close();
+		conn.disconnect();
+		// System.err.println("data : " + sb.toString());
+		model.addAttribute("corona", sb.toString());
+
+		// String to Json
+		ObjectMapper objectMapper = new ObjectMapper();
+		JsonNode jsonN = objectMapper.readTree(sb.toString());
+		// JsonNode jsonV = objectMapper.readValue(sb.toString(), JsonNode.class);
+
+		System.out.println(jsonN.get("response").get("result").get(0));
+
+		// Json to map
+		Map<String, Object> result = objectMapper.readValue((jsonN.get("response").get("result").get(0)).toString(),
+				new TypeReference<Map<String, Object>>() {
+				});
+
+		System.out.println(result);
+		model.addAttribute("result", result);
+		return "/admin/corona";
+	}
+
+	@GetMapping("/air2")
+	public String air2(Model model) throws Exception {
+		/*
+		 * StringBuilder urlBuilder = new StringBuilder(
+		 * "http://apis.data.go.kr/B552584/ArpltnStatsSvc/getMsrstnAcctoRDyrg"); URL
+		 * urlBuilder.append(
+		 * "?serviceKey=X2%2BL9ngA9U%2BUDcmJaEl8ESe3WiuXfcG5rlbqRFefc4sZqoZiZtC1z3gPPtX782lvE1bLYQHxIt%2Fy981RH%2FkJqA%3D%3D"
+		 * ); Service Key urlBuilder.append("&returnType=xml"); xml 또는 json
+		 * urlBuilder.append("&numOfRows=100"); 한 페이지 결과 수
+		 * urlBuilder.append("&pageNo=1"); 페이지번호
+		 * urlBuilder.append("&inqBginDt=20230801"); 조회시작일자
+		 * urlBuilder.append("&inqEndDt=20230829"); 조회종료일자
+		 * urlBuilder.append("&msrstnName=" + URLEncoder.encode("강남구", "UTF-8")); 측정소명
+		 * URL url = new URL(urlBuilder.toString()); HttpURLConnection conn =
+		 * (HttpURLConnection) url.openConnection(); conn.setRequestMethod("GET");
+		 * conn.setRequestProperty("Content-type", "application/json");
+		 * System.out.println("Response code: " + conn.getResponseCode());
+		 * BufferedReader rd; if (conn.getResponseCode() >= 200 &&
+		 * conn.getResponseCode() <= 300) { rd = new BufferedReader(new
+		 * InputStreamReader(conn.getInputStream())); } else { rd = new
+		 * BufferedReader(new InputStreamReader(conn.getErrorStream())); } StringBuilder
+		 * sb = new StringBuilder(); String line; while ((line = rd.readLine()) != null)
+		 * { sb.append(line); } rd.close(); conn.disconnect();
+		 * System.out.println(sb.toString()); String xml = sb.toString();
+		 */
+		return "";
+	}
 	
-	
-	
+	@GetMapping("/air")
+	public String air(Model model) throws Exception {
+		// String to xml
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		Document document = builder.parse("c:\\temp\\air.xml");
+
+		//document.getDocumentElement().normalize();
+		System.out.println(document.getDocumentElement().getNodeName());
+		
+		NodeList list = document.getElementsByTagName("item");
+	      //System.out.println("item length = " + list.getLength());
+	      //System.out.println(list.toString());
+	      ArrayList<Map<String, Object>> coronaList = new ArrayList<Map<String,Object>>();
+	      for (int i = list.getLength() - 1; i >= 0; i--) {
+	         NodeList childList = list.item(i).getChildNodes();
+	         
+	         Map<String, Object> value = new HashMap<String, Object>();
+	         for (int j = 0; j < childList.getLength(); j++) {
+	            Node node = childList.item(j);
+	            if (node.getNodeType() == Node.ELEMENT_NODE) { 
+	               //System.out.println(node.getNodeName());
+	               //System.out.println(node.getTextContent());
+	               value.put(node.getNodeName(), node.getTextContent());
+	            }
+	         }
+	         coronaList.add(value);
+	      }
+	      System.out.println("xml : " + coronaList);
+	      model.addAttribute("list", coronaList);
+
+		return "/admin/air";
+	}
+
 }
+
+	
+	
+

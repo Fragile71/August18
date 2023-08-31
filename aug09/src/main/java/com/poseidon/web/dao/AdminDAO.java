@@ -33,6 +33,8 @@ public interface AdminDAO {
 	List<Map<String, Object>> post();
 
 	
+	String content(int mbno);
+
 	 // Map<String, Object> post(int mb_no);
 	 
 	
