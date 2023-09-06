@@ -4,14 +4,14 @@
 
 
    <select id="login" parameterType="map" resultType="map">
-      SELECT m_name, count(*) AS 'count' FROM member WHERE
+      SELECT m_name, count(*) AS 'count' FROM members WHERE
        m_id = #{id} AND AES_DECRYPT(UNHEX(m_pw),'sik') = #{pw}
    </select>
 
 
 <select id="myInfo" parameterType="String" resultType="map">
 SELECT *
-FROM member
+FROM members
 WHERE m_id = #{id}
 
 </select>

@@ -11,7 +11,7 @@ FROM(
          FROM board b) bb, (SELECT @ROWNUM:=0) AS R
    WHERE bdel=1
    ORDER BY bb.bno ASC
-   ) as ff join member m on ff.m_no = m.m_no 
+   ) as ff join members m on ff.m_no = m.m_no 
 order by bno desc
 LIMIT 0, 10
 	</select>
@@ -23,7 +23,7 @@ LIMIT 0, 10
  
     <insert id= "write" parameterType= "com.poseidon.web.dto.BoardDTO">
      INSERT INTO board (btitle, bcontent, m_no, bip, uuid)
-     VALUES (#{btitle}, #{bcontent}, (SELECT m_no FROM member WHERE m_id=#{m_id}), #{bip}, #{uuid})
+     VALUES (#{btitle}, #{bcontent}, (SELECT m_no FROM members WHERE m_id=#{m_id}), #{bip}, #{uuid})
 
 </insert>
 

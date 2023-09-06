@@ -20,7 +20,7 @@
 
 	    <insert id="mbWrite" parameterType="map">
 		INSERT INTO multiboard(mb_title,mb_content,mb_board, m_no)
-		VALUES(#{title},#{content},#{board},(SELECT m_no FROM member WHERE
+		VALUES(#{title},#{content},#{board},(SELECT m_no FROM members WHERE
 		m_id=#{mid}))
 		<selectKey resultType="Integer" keyProperty="mb_no"
 			order="AFTER">
